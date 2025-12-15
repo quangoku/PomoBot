@@ -1,28 +1,13 @@
-import { MezonClient } from "mezon-sdk";
-import dotenv from "dotenv";
+import initBot from "./bot/index.ts";
+import express from "express";
 
-dotenv.config();
+const app = express();
 
-async function main() {
-  const client = new MezonClient({
-    botId: process.env.BOT_ID,
-    token: process.env.BOT_TOKEN,
-  });
+app.get("/", (req, res) => {
+  res.json({ message: "hello 世界" });
+});
 
-  await client.login();
-
-  client.onChannelMessage(async (event) => {
-    const channel = await client.channels.fetch(event.channel_id);
-    const msg = await channel.messages.fetch(event.message_id!);
-
-    if (event.content.t === "*ping") {
-      return msg.reply({ t: "Pong!" }, []);
-    } else if (event.content.t?.startsWith("*pomo")) {
-      return msg.reply({ t: "start pomo" });
-    }
-  });
-
-  console.log("Bot đã khởi động!");
-}
-
-main().catch(console.error);
+app.listen(3000, async () => {
+  await initBot();
+  console.log("app running at 3000");
+});
