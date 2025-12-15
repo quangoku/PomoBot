@@ -4,15 +4,22 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "nodemon index"
+    "start": "node dist/index.js",
+    "dev": "nodemon --exec ts-node src/index.ts",
+    "build": "tsc"
   },
   "dependencies": {
     "@google/genai": "^1.33.0",
     "@google/generative-ai": "^0.24.1",
     "dotenv": "^16.4.5",
-    "mezon-sdk": "^2.7.93"
+    "express": "^5.2.1",
+    "mezon-sdk": "^2.7.93",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
   },
   "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.0.2",
     "nodemon": "^3.1.7"
   }
 }
