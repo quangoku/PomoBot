@@ -1,13 +1,27 @@
-import initBot from "./bot/index.ts";
-import express from "express";
+import { MezonClient } from "mezon-sdk";
+import dotenv from "dotenv";
+import handleStartPomo from "./bot/command/CreatePomo.ts";
+dotenv.config();
+//main thread of the bot
+async function main() {
+  //init client
+  const client = new MezonClient({
+    botId: process.env.BOT_ID,
+    token: process.env.BOT_TOKEN,
+  });
+  await client.login();
 
-const app = express();
-
-app.get("/", (req, res) => {
-  res.json({ message: "hello 世界" });
-});
-
-app.listen(3000, async () => {
-  await initBot();
-  console.log("app running at 3000");
-});
+  client.onChannelMessage(async (event) => {
+    if (event.content.t?.startsWith("a")) {
+      handleStartPomo(client, event);
+    }
+  });
+  client.onMessageButtonClicked(async (event) => {
+    if (event.button_id === "start_button") {
+      console.log("START");
+    }
+  });
+}
+main()
+  .then(() => console.log("Bot is running"))
+  .catch(console.error);
