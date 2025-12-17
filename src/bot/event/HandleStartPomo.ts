@@ -64,7 +64,6 @@ export default async function handleStartPomo(
         id: message.sender_id,
         username: mezonUser?.username!,
       });
-      console.log(newUser);
     }
 
     const task = await Task.create({

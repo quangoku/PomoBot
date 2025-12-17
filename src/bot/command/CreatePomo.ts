@@ -21,15 +21,17 @@ export default async function createPomo(event: ChannelMessage) {
   const message = await channel.messages.fetch(event.message_id!);
   //gen buttonId random to not conflict with other button
   const buttonId = randomUUID();
+  const cancelId = randomUUID();
   // create ui component
   const button: ButtonComponent = createButton(buttonId, "start", 3);
+  const cancel: ButtonComponent = createButton(cancelId, "cancel", 4);
   const timeSelect: SelectComponent = createSelect("time_select", "", [
     { label: "15mins", value: "15" },
     { label: "30mins", value: "30" },
     { label: "60mins", value: "60" },
   ]);
   const taskInput: InputComponent = createInput("task", "Task to complete");
-  const actionRow1: IMessageActionRow = createActionRow([button]);
+  const actionRow1: IMessageActionRow = createActionRow([cancel, button]);
 
   const embedMessage: IInteractiveMessageProps = {
     color: "#ff0000ff",
@@ -65,9 +67,15 @@ export default async function createPomo(event: ChannelMessage) {
 
   await sendEphemeral(channel, message.sender_id, content);
 
-  client.onMessageButtonClicked((event) => {
+  client.onMessageButtonClicked(async (event) => {
     if (event.button_id === buttonId) {
       handleStartPomo(channel, event, message);
+    } else if (event.button_id === cancelId) {
+      await channel.updateEphemeral(
+        event.user_id,
+        { t: "updated" },
+        event.message_id
+      );
     }
   });
 }
