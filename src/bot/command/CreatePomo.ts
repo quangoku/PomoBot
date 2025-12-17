@@ -6,31 +6,36 @@ import {
   type InputComponent,
   type ButtonComponent,
   type ChannelMessage,
+  type ChannelMessageContent,
 } from "mezon-sdk";
 import { createButton } from "../components/Button.ts";
 import { createSelect } from "../components/Select.ts";
 import { createInput } from "../components/Input.ts";
 import { createActionRow } from "../components/ActionRow.ts";
-import { replyWithExtras } from "../message/Message.ts";
+import { sendEphemeral } from "../message/Message.ts";
+import handleStartPomo from "../event/HandleStartPomo.ts";
+import { randomUUID } from "node:crypto";
 
-export default async function handleStartPomo(
+export default async function createPomo(
   client: MezonClient,
   event: ChannelMessage
 ) {
   // get channel and message
   const channel = await client.channels.fetch(event.channel_id);
-  const msg = await channel.messages.fetch(event.message_id!);
+  const message = await channel.messages.fetch(event.message_id!);
+  //gen buttonId random to not conflict with other button
+  const buttonId = randomUUID();
   // create ui component
-  const button: ButtonComponent = createButton("start_button", "start", 3);
+  const button: ButtonComponent = createButton(buttonId, "start", 3);
   const timeSelect: SelectComponent = createSelect("time_select", "", [
     { label: "15mins", value: "15" },
     { label: "30mins", value: "30" },
     { label: "60mins", value: "60" },
   ]);
-  const taskInput: InputComponent = createInput("input", "Task to complete");
+  const taskInput: InputComponent = createInput("task", "Task to complete");
   const actionRow1: IMessageActionRow = createActionRow([button]);
 
-  const messageProps: IInteractiveMessageProps = {
+  const embedMessage: IInteractiveMessageProps = {
     color: "#ff0000ff",
     title: "⌛ START YOUR POMODORO",
     author: {
@@ -51,10 +56,23 @@ export default async function handleStartPomo(
       },
     ],
     footer: {
-      text: "Pomodoro: Focus 100% | Created by HOTBOT",
+      text: "PomoBOT: Focus 100% on your task | Created by HOTBOT",
       icon_url: "https://cdn-icons-png.flaticon.com/512/14359/14359077.png",
     },
   };
 
-  return replyWithExtras(msg, "", [actionRow1], [messageProps]);
+  const content: ChannelMessageContent = {
+    t: "",
+    components: [actionRow1],
+    embed: [embedMessage],
+  };
+
+  await sendEphemeral(channel, message.sender_id, content);
+
+  client.onMessageButtonClicked((event) => {
+    if (event.button_id === buttonId) {
+      console.log(buttonId);
+      handleStartPomo(channel, event, message);
+    }
+  });
 }

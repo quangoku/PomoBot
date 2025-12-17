@@ -59,3 +59,11 @@ export async function replyWithExtras(
     throw error;
   }
 }
+
+export async function sendEphemeral(
+  channel: TextChannel,
+  recieveId: string,
+  content: ChannelMessageContent
+) {
+  return await channel.sendEphemeral(recieveId, content);
+}

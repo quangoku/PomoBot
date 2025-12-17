@@ -1,6 +1,6 @@
 import { MezonClient } from "mezon-sdk";
 import dotenv from "dotenv";
-import handleStartPomo from "./bot/command/CreatePomo.ts";
+import CreatePomo from "./bot/command/CreatePomo.ts";
 dotenv.config();
 //main thread of the bot
 async function main() {
@@ -10,15 +10,9 @@ async function main() {
     token: process.env.BOT_TOKEN,
   });
   await client.login();
-
   client.onChannelMessage(async (event) => {
     if (event.content.t?.startsWith("a")) {
-      handleStartPomo(client, event);
-    }
-  });
-  client.onMessageButtonClicked(async (event) => {
-    if (event.button_id === "start_button") {
-      console.log("START");
+      CreatePomo(client, event);
     }
   });
 }
