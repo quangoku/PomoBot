@@ -1,18 +1,15 @@
-import { MezonClient } from "mezon-sdk";
-import dotenv from "dotenv";
+import client from "./bot/client.ts";
 import CreatePomo from "./bot/command/CreatePomo.ts";
+import connectDB from "./db/ConnectDB.ts";
+import dotenv from "dotenv";
 dotenv.config();
-//main thread of the bot
+
 async function main() {
-  //init client
-  const client = new MezonClient({
-    botId: process.env.BOT_ID,
-    token: process.env.BOT_TOKEN,
-  });
   await client.login();
+  await connectDB();
   client.onChannelMessage(async (event) => {
     if (event.content.t?.startsWith("a")) {
-      CreatePomo(client, event);
+      CreatePomo(event);
     }
   });
 }

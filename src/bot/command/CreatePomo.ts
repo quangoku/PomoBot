@@ -1,5 +1,4 @@
 import {
-  MezonClient,
   type IMessageActionRow,
   type IInteractiveMessageProps,
   type SelectComponent,
@@ -15,11 +14,8 @@ import { createActionRow } from "../components/ActionRow.ts";
 import { sendEphemeral } from "../message/Message.ts";
 import handleStartPomo from "../event/HandleStartPomo.ts";
 import { randomUUID } from "node:crypto";
-
-export default async function createPomo(
-  client: MezonClient,
-  event: ChannelMessage
-) {
+import client from "../client.ts";
+export default async function createPomo(event: ChannelMessage) {
   // get channel and message
   const channel = await client.channels.fetch(event.channel_id);
   const message = await channel.messages.fetch(event.message_id!);
@@ -71,7 +67,6 @@ export default async function createPomo(
 
   client.onMessageButtonClicked((event) => {
     if (event.button_id === buttonId) {
-      console.log(buttonId);
       handleStartPomo(channel, event, message);
     }
   });
