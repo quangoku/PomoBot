@@ -1,10 +1,14 @@
-import type { IInteractiveMessageProps } from "mezon-sdk";
+import type { ButtonComponent, IInteractiveMessageProps } from "mezon-sdk";
 import type { Message } from "mezon-sdk/dist/cjs/mezon-client/structures/Message.js";
 import type { TextChannel } from "mezon-sdk/dist/cjs/mezon-client/structures/TextChannel.js";
 import type { MessageButtonClicked } from "mezon-sdk/dist/cjs/rtapi/realtime.js";
 import User from "../../db/models/user.model.ts";
 import client from "../client.ts";
 import Task from "../../db/models/task.model.ts";
+import { randomUUID } from "node:crypto";
+import { createButton } from "../components/Button.ts";
+import { createActionRow } from "../components/ActionRow.ts";
+
 interface Data {
   task: string;
   time_select: string;
@@ -28,7 +32,7 @@ export default async function handleStartPomo(
 
     //create message to inform user that pomodoro has started
     const embedMessage: IInteractiveMessageProps = {
-      color: "#ff0000ff",
+      color: "#000000ff",
       title: "⌛TIME TO FOCUS",
       author: {
         name: ``,
@@ -58,10 +62,20 @@ export default async function handleStartPomo(
         icon_url: "https://cdn-icons-png.flaticon.com/512/14359/14359077.png",
       },
     };
+    const buttonId = randomUUID();
+    const cancelId = randomUUID();
+    const removeId = randomUUID();
+    // create ui component
+    const button: ButtonComponent = createButton(buttonId, "Continue", 3);
+    const cancel: ButtonComponent = createButton(cancelId, "Stop", 4);
+    const remove: ButtonComponent = createButton(removeId, "Remove", 5);
+
+    const actionRow = createActionRow([cancel, button, remove]);
     //send message to user that pomodoro has started
     const replyResponse = await message.reply({
       t: "",
       embed: [embedMessage],
+      components: [actionRow],
     });
 
     const replyMessage = await channel.messages.fetch(replyResponse.message_id);
@@ -83,12 +97,12 @@ export default async function handleStartPomo(
 
     let timeLeft = Number(data.time_select); // Số phút còn lại
 
-    const interval = setInterval(async () => {
+    let interval = setInterval(async () => {
       timeLeft--;
       if (timeLeft < 0) {
         clearInterval(interval);
         await Task.findByIdAndUpdate(task._id, { isCompleted: true });
-        message.reply({
+        await message.reply({
           t: "",
           embed: [
             {
@@ -120,9 +134,10 @@ export default async function handleStartPomo(
       }
       replyMessage.update({
         t: "",
+        components: [actionRow],
         embed: [
           {
-            color: "#ff0000ff",
+            color: "#000000ff",
             title: "⌛TIME TO FOCUS",
             author: {
               name: ``,
@@ -143,7 +158,7 @@ export default async function handleStartPomo(
                 value: ``,
               },
               {
-                name: "Remind :Turn off your phone notifications and focus on your task!",
+                name: "Remind : Turn off your phone notifications and focus on your task!",
                 value: ``,
               },
             ],
@@ -156,6 +171,169 @@ export default async function handleStartPomo(
         ],
       });
     }, 1000);
+    client.onMessageButtonClicked(async (btnEvent) => {
+      if (interval) {
+        clearInterval(interval);
+        interval = null;
+      }
+      if (btnEvent.button_id === cancelId) {
+        if (timeLeft <= 0) return;
+        await replyMessage.update({
+          t: "",
+          components: [actionRow],
+          embed: [
+            {
+              color: "#000000ff",
+              title: "⌛TIME TO FOCUS",
+              author: {
+                name: ``,
+              },
+              fields: [
+                {
+                  name: "📚Task to complete",
+                  value: `${data.task}`,
+                  inline: true,
+                },
+                {
+                  name: "⏲️Duration ",
+                  value: `${data.time_select}mins`,
+                  inline: true,
+                },
+                {
+                  name: `Time left : ${timeLeft}mins (STOPPED)`,
+                  value: ``,
+                },
+                {
+                  name: "Remind : Turn off your phone notifications and focus on your task!",
+                  value: ``,
+                },
+              ],
+              footer: {
+                text: "PomoBOT: Focus 100% on your task | Created by HOTBOT",
+                icon_url:
+                  "https://cdn-icons-png.flaticon.com/512/14359/14359077.png",
+              },
+            },
+          ],
+        });
+      } else if (btnEvent.button_id === buttonId) {
+        if (timeLeft <= 0) return;
+        {
+          await replyMessage.update({
+            t: "",
+            components: [actionRow],
+            embed: [
+              {
+                color: "#000000ff",
+                title: "⌛TIME TO FOCUS",
+                author: {
+                  name: ``,
+                },
+                fields: [
+                  {
+                    name: "📚Task to complete",
+                    value: `${data.task}`,
+                    inline: true,
+                  },
+                  {
+                    name: "⏲️Duration ",
+                    value: `${data.time_select}mins`,
+                    inline: true,
+                  },
+                  {
+                    name: `Time left : ${timeLeft}mins`,
+                    value: ``,
+                  },
+                  {
+                    name: "Remind : Turn off your phone notifications and focus on your task!",
+                    value: ``,
+                  },
+                ],
+                footer: {
+                  text: "PomoBOT: Focus 100% on your task | Created by HOTBOT",
+                  icon_url:
+                    "https://cdn-icons-png.flaticon.com/512/14359/14359077.png",
+                },
+              },
+            ],
+          });
+          interval = setInterval(async () => {
+            timeLeft--;
+            if (timeLeft < 0) {
+              clearInterval(interval);
+              await Task.findByIdAndUpdate(task._id, { isCompleted: true });
+              await message.reply({
+                t: "",
+                embed: [
+                  {
+                    color: "#3eb806ff",
+                    title: "🍵TIME FOR A BREAK!",
+                    author: {
+                      name: `CONGRATULATIONS!`,
+                    },
+                    fields: [
+                      {
+                        name: "⏲️Duration ",
+                        value: `15mins`,
+                        inline: true,
+                      },
+                      {
+                        name: "Remind : Grab a cup of coffee or take a short walk!",
+                        value: ``,
+                      },
+                    ],
+                    footer: {
+                      text: "PomoBOT: Focus 100% on your task | Created by HOTBOT",
+                      icon_url:
+                        "https://cdn-icons-png.flaticon.com/512/14359/14359077.png",
+                    },
+                  },
+                ],
+              });
+              return;
+            }
+            await replyMessage.update({
+              t: "",
+              components: [actionRow],
+              embed: [
+                {
+                  color: "#000000ff",
+                  title: "⌛TIME TO FOCUS",
+                  author: {
+                    name: ``,
+                  },
+                  fields: [
+                    {
+                      name: "📚Task to complete",
+                      value: `${data.task}`,
+                      inline: true,
+                    },
+                    {
+                      name: "⏲️Duration ",
+                      value: `${data.time_select}mins`,
+                      inline: true,
+                    },
+                    {
+                      name: `Time left : ${timeLeft}mins`,
+                      value: ``,
+                    },
+                    {
+                      name: "Remind : Turn off your phone notifications and focus on your task!",
+                      value: ``,
+                    },
+                  ],
+                  footer: {
+                    text: "PomoBOT: Focus 100% on your task | Created by HOTBOT",
+                    icon_url:
+                      "https://cdn-icons-png.flaticon.com/512/14359/14359077.png",
+                  },
+                },
+              ],
+            });
+          }, 1000);
+        }
+      }
+    });
   } catch (error) {
     message.reply({
       t: "All inputs are required",
