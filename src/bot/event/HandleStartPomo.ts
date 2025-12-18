@@ -332,6 +332,9 @@ export default async function handleStartPomo(
             });
           }, 1000);
         }
+      } else if (btnEvent.button_id === removeId) {
+        const pomo = await channel.messages.get(btnEvent.message_id);
+        pomo?.delete();
       }
     });
   } catch (error) {
