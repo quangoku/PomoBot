@@ -66,16 +66,11 @@ export default async function createPomo(event: ChannelMessage) {
   };
 
   await sendEphemeral(channel, message.sender_id, content);
-
   client.onMessageButtonClicked(async (event) => {
     if (event.button_id === buttonId) {
       handleStartPomo(channel, event, message);
     } else if (event.button_id === cancelId) {
-      await channel.updateEphemeral(
-        event.user_id,
-        { t: "updated" },
-        event.message_id
-      );
+      await channel.deleteEphemeral(event.user_id, event.message_id);
     }
   });
 }

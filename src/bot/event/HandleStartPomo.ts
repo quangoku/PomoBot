@@ -24,14 +24,12 @@ export default async function handleStartPomo(
       throw new Error("invalid input");
     }
     //if success remove the ephemeral message and start a pomodoros , save to db , etc...
-    const response = await channel.deleteEphemeral(
-      event.user_id,
-      event.message_id
-    );
+    await channel.deleteEphemeral(event.user_id, event.message_id);
+
     //create message to inform user that pomodoro has started
     const embedMessage: IInteractiveMessageProps = {
       color: "#ff0000ff",
-      title: "⌛YOUR POMODORO",
+      title: "⌛TIME TO FOCUS",
       author: {
         name: ``,
       },
@@ -46,6 +44,14 @@ export default async function handleStartPomo(
           value: `${data.time_select}mins`,
           inline: true,
         },
+        {
+          name: `Time left : ${data.time_select}mins`,
+          value: ``,
+        },
+        {
+          name: "Remind : Turn off your phone notifications and focus on your task!",
+          value: ``,
+        },
       ],
       footer: {
         text: "PomoBOT: Focus 100% on your task | Created by HOTBOT",
@@ -53,10 +59,12 @@ export default async function handleStartPomo(
       },
     };
     //send message to user that pomodoro has started
-    message.reply({
+    const replyResponse = await message.reply({
       t: "",
       embed: [embedMessage],
     });
+
+    const replyMessage = await channel.messages.fetch(replyResponse.message_id);
 
     const user = await User.findOne({ id: message.sender_id });
     if (!user) {
@@ -73,13 +81,81 @@ export default async function handleStartPomo(
       userId: message.sender_id,
     });
 
-    setTimeout(async () => {
-      message.reply({
-        t: "Time out",
-      });
+    let timeLeft = Number(data.time_select); // Số phút còn lại
 
-      await Task.findByIdAndUpdate(task._id, { isCompleted: true });
-    }, 5000);
+    const interval = setInterval(async () => {
+      timeLeft--;
+      if (timeLeft < 0) {
+        clearInterval(interval);
+        await Task.findByIdAndUpdate(task._id, { isCompleted: true });
+        message.reply({
+          t: "",
+          embed: [
+            {
+              color: "#3eb806ff",
+              title: "🍵TIME FOR A BREAK!",
+              author: {
+                name: `CONGRATULATIONS!`,
+              },
+              fields: [
+                {
+                  name: "⏲️Duration ",
+                  value: `15mins`,
+                  inline: true,
+                },
+                {
+                  name: "Remind : Grab a cup of coffee or take a short walk!",
+                  value: ``,
+                },
+              ],
+              footer: {
+                text: "PomoBOT: Focus 100% on your task | Created by HOTBOT",
+                icon_url:
+                  "https://cdn-icons-png.flaticon.com/512/14359/14359077.png",
+              },
+            },
+          ],
+        });
+        return;
+      }
+      replyMessage.update({
+        t: "",
+        embed: [
+          {
+            color: "#ff0000ff",
+            title: "⌛TIME TO FOCUS",
+            author: {
+              name: ``,
+            },
+            fields: [
+              {
+                name: "📚Task to complete",
+                value: `${data.task}`,
+                inline: true,
+              },
+              {
+                name: "⏲️Duration ",
+                value: `${data.time_select}mins`,
+                inline: true,
+              },
+              {
+                name: `Time left : ${timeLeft}mins`,
+                value: ``,
+              },
+              {
+                name: "Remind :Turn off your phone notifications and focus on your task!",
+                value: ``,
+              },
+            ],
+            footer: {
+              text: "PomoBOT: Focus 100% on your task | Created by HOTBOT",
+              icon_url:
+                "https://cdn-icons-png.flaticon.com/512/14359/14359077.png",
+            },
+          },
+        ],
+      });
+    }, 1000);
   } catch (error) {
     message.reply({
       t: "All inputs are required",

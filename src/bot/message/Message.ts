@@ -3,7 +3,7 @@ import type {
   IInteractiveMessageProps,
   IMessageActionRow,
 } from "mezon-sdk";
-import type { Message } from "mezon-sdk/dist/cjs/mezon-client/structures/Message.js";
+import { Message } from "mezon-sdk/dist/cjs/mezon-client/structures/Message.js";
 import type { TextChannel } from "mezon-sdk/dist/cjs/mezon-client/structures/TextChannel.js";
 
 export async function getMessage(

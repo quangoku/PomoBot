@@ -17,7 +17,7 @@ export default async function Getinfo(event: ChannelMessage) {
 
   const embedMessage: IInteractiveMessageProps = {
     color: "#19bf13ff",
-    title: "📈YOUR PROGRESS",
+    title: "***YOUR PROGRESS***",
     author: {
       name: `📈Progress : ${event.username}`,
     },
