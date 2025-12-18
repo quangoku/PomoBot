@@ -28,6 +28,7 @@ export default async function handleStartPomo(
       event.user_id,
       event.message_id
     );
+    //create message to inform user that pomodoro has started
     const embedMessage: IInteractiveMessageProps = {
       color: "#ff0000ff",
       title: "⌛YOUR POMODORO",
@@ -51,7 +52,7 @@ export default async function handleStartPomo(
         icon_url: "https://cdn-icons-png.flaticon.com/512/14359/14359077.png",
       },
     };
-
+    //send message to user that pomodoro has started
     message.reply({
       t: "",
       embed: [embedMessage],
@@ -74,8 +75,10 @@ export default async function handleStartPomo(
 
     setTimeout(async () => {
       message.reply({
-        t: "BUZZ",
+        t: "Time out",
       });
+
+      await Task.findByIdAndUpdate(task._id, { isCompleted: true });
     }, 5000);
   } catch (error) {
     message.reply({
