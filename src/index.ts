@@ -1,7 +1,8 @@
 import client from "./bot/client.ts";
-import CreatePomo from "./bot/command/CreatePomo.ts";
-import { GetLeaderBoard } from "./bot/command/GetLeaderBoard.ts";
-import GetProgress from "./bot/command/GetProgress.ts";
+import createPomo from "./bot/command/CreatePomo.ts";
+import { getLeaderBoard } from "./bot/command/GetLeaderBoard.ts";
+import getProgress from "./bot/command/GetProgress.ts";
+import { getQuote } from "./bot/command/GetQuote.ts";
 import { handleCancelPomo } from "./bot/event/HandleCancelPomo.ts";
 import connectDB from "./db/ConnectDB.ts";
 import dotenv from "dotenv";
@@ -12,11 +13,13 @@ async function main() {
   await connectDB();
   client.onChannelMessage(async (event) => {
     if (event.content.t?.startsWith("a")) {
-      CreatePomo(event);
+      createPomo(event);
     } else if (event.content.t?.startsWith("b")) {
-      GetProgress(event);
+      getProgress(event);
     } else if (event.content.t?.startsWith("c")) {
-      GetLeaderBoard(event);
+      getLeaderBoard(event);
+    } else if (event.content.t?.startsWith("d")) {
+      getQuote(event);
     }
   });
   client.onMessageButtonClicked(async (event) => {
