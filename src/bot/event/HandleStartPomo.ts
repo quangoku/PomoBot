@@ -8,6 +8,7 @@ import Task from "../../db/models/task.model.ts";
 import { randomUUID } from "node:crypto";
 import { createButton } from "../components/Button.ts";
 import { createActionRow } from "../components/ActionRow.ts";
+import { getRandomReminder } from "../utils/Reminder.ts";
 
 interface Data {
   task: string;
@@ -30,7 +31,7 @@ export default async function handleStartPomo(
     }
     //if success remove the ephemeral message and start a pomodoros , save to db , etc...
     await channel.deleteEphemeral(event.user_id, event.message_id);
-
+    const Reminder = getRandomReminder();
     //create message to inform user that pomodoro has started
     const embedMessage: IInteractiveMessageProps = {
       color: "#000000ff",
@@ -54,7 +55,7 @@ export default async function handleStartPomo(
           value: ``,
         },
         {
-          name: "Remind : Turn off your phone notifications and focus on your task!",
+          name: "Remind :" + Reminder,
           value: ``,
         },
       ],
@@ -78,7 +79,6 @@ export default async function handleStartPomo(
       embed: [embedMessage],
       components: [actionRow],
     });
-
     const replyMessage = await channel.messages.fetch(replyResponse.message_id);
     const pomoMessageId = replyResponse.message_id;
 
@@ -103,6 +103,7 @@ export default async function handleStartPomo(
       timeLeft--;
       if (timeLeft < 0) {
         clearInterval(interval);
+        await replyMessage.delete();
         await Task.findByIdAndUpdate(task._id, { isCompleted: true });
         await message.reply({
           t: "",
@@ -160,7 +161,7 @@ export default async function handleStartPomo(
                 value: ``,
               },
               {
-                name: "Remind : Turn off your phone notifications and focus on your task!",
+                name: "Remind : " + Reminder,
                 value: ``,
               },
             ],
@@ -210,7 +211,7 @@ export default async function handleStartPomo(
                   value: ``,
                 },
                 {
-                  name: "Remind : Turn off your phone notifications and focus on your task!",
+                  name: "Remind : " + Reminder,
                   value: ``,
                 },
               ],
@@ -251,7 +252,7 @@ export default async function handleStartPomo(
                     value: ``,
                   },
                   {
-                    name: "Remind : Turn off your phone notifications and focus on your task!",
+                    name: "Remind : " + Reminder,
                     value: ``,
                   },
                 ],
@@ -324,7 +325,7 @@ export default async function handleStartPomo(
                       value: ``,
                     },
                     {
-                      name: "Remind : Turn off your phone notifications and focus on your task!",
+                      name: "Remind : " + Reminder,
                       value: ``,
                     },
                   ],
