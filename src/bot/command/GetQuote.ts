@@ -1,10 +1,10 @@
 import type { ChannelMessage } from "mezon-sdk";
-import { getRandomQuote } from "../utils/Quote.ts";
-import client from "../client.ts";
+import { getRandomQuote } from "../utils/Quote.js";
+import client from "../client.js";
 import type { IInteractiveMessageProps } from "mezon-sdk";
 
 export async function getQuote(event: ChannelMessage) {
-  const quote = getRandomQuote();
+  const quote = getRandomQuote()!;
   const channel = await client.channels.fetch(event.channel_id);
   const message = await channel.messages.fetch(event.message_id!);
 

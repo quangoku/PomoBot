@@ -1,10 +1,10 @@
-import client from "./bot/client.ts";
-import createPomo from "./bot/command/CreatePomo.ts";
-import { getLeaderBoard } from "./bot/command/GetLeaderBoard.ts";
-import getProgress from "./bot/command/GetProgress.ts";
-import { getQuote } from "./bot/command/GetQuote.ts";
-import { handleCancelPomo } from "./bot/event/HandleCancelPomo.ts";
-import connectDB from "./db/ConnectDB.ts";
+import client from "./bot/client.js";
+import createPomo from "./bot/command/CreatePomo.js";
+import { getLeaderBoard } from "./bot/command/GetLeaderBoard.js";
+import getProgress from "./bot/command/GetProgress.js";
+import { getQuote } from "./bot/command/GetQuote.js";
+import { handleCancelPomo } from "./bot/event/HandleCancelPomo.js";
+import connectDB from "./db/ConnectDB.js";
 import dotenv from "dotenv";
 dotenv.config();
 

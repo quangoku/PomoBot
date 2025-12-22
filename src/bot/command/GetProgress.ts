@@ -1,6 +1,6 @@
 import { type ChannelMessage, type IInteractiveMessageProps } from "mezon-sdk";
-import client from "../client.ts";
-import Task from "../../db/models/task.model.ts";
+import client from "../client.js";
+import Task from "../../db/models/task.model.js";
 
 function getTreeStatus(minutes: number) {
   if (minutes < 30) return { emoji: "🌰", label: "Seedling (Hạt giống)" };

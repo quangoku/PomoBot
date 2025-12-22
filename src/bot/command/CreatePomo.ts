@@ -7,13 +7,13 @@ import {
   type ChannelMessage,
   type ChannelMessageContent,
 } from "mezon-sdk";
-import { createButton } from "../components/Button.ts";
-import { createSelect } from "../components/Select.ts";
-import { createInput } from "../components/Input.ts";
-import { createActionRow } from "../components/ActionRow.ts";
-import { sendEphemeral } from "../message/Message.ts";
-import client from "../client.ts";
-import handleStartPomo from "../event/HandleStartPomo.ts";
+import { createButton } from "../components/Button.js";
+import { createSelect } from "../components/Select.js";
+import { createInput } from "../components/Input.js";
+import { createActionRow } from "../components/ActionRow.js";
+import { sendEphemeral } from "../message/Message.js";
+import client from "../client.js";
+import handleStartPomo from "../event/HandleStartPomo.js";
 import { randomUUID } from "node:crypto";
 export default async function createPomo(event: ChannelMessage) {
   // get channel and message

@@ -1,14 +1,13 @@
 import type { ButtonComponent, IInteractiveMessageProps } from "mezon-sdk";
 import type { Message } from "mezon-sdk/dist/cjs/mezon-client/structures/Message.js";
-import type { TextChannel } from "mezon-sdk/dist/cjs/mezon-client/structures/TextChannel.js";
 import type { MessageButtonClicked } from "mezon-sdk/dist/cjs/rtapi/realtime.js";
-import User from "../../db/models/user.model.ts";
-import client from "../client.ts";
-import Task from "../../db/models/task.model.ts";
+import User from "../../db/models/user.model.js";
+import client from "../client.js";
+import Task from "../../db/models/task.model.js";
 import { randomUUID } from "node:crypto";
-import { createButton } from "../components/Button.ts";
-import { createActionRow } from "../components/ActionRow.ts";
-import { getRandomReminder } from "../utils/Reminder.ts";
+import { createButton } from "../components/Button.js";
+import { createActionRow } from "../components/ActionRow.js";
+import { getRandomReminder } from "../utils/Reminder.js";
 
 interface Data {
   task: string;
@@ -99,7 +98,7 @@ export default async function handleStartPomo(
 
     let timeLeft = Number(data.time_select); // Số phút còn lại
 
-    let interval = setInterval(async () => {
+    let interval: NodeJS.Timeout | undefined = setInterval(async () => {
       timeLeft--;
       if (timeLeft < 0) {
         clearInterval(interval);
@@ -181,7 +180,7 @@ export default async function handleStartPomo(
       }
       if (interval) {
         clearInterval(interval);
-        interval = null;
+        interval = undefined;
       }
       if (btnEvent.button_id === stopId) {
         if (timeLeft <= 0) return;
@@ -225,6 +224,7 @@ export default async function handleStartPomo(
         });
       } else if (btnEvent.button_id === continueId) {
         if (timeLeft <= 0) return;
+
         {
           await replyMessage.update({
             t: "",
@@ -267,6 +267,7 @@ export default async function handleStartPomo(
           interval = setInterval(async () => {
             timeLeft--;
             if (timeLeft < 0) {
+              await replyMessage.delete();
               clearInterval(interval);
               await Task.findByIdAndUpdate(task._id, { isCompleted: true });
               await message.reply({

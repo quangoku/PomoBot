@@ -1,6 +1,6 @@
 import type { ChannelMessage, IInteractiveMessageProps } from "mezon-sdk";
-import client from "../client.ts";
-import Task from "../../db/models/task.model.ts";
+import client from "../client.js";
+import Task from "../../db/models/task.model.js";
 
 export async function getLeaderBoard(event: ChannelMessage) {
   const channel = await client.channels.fetch(event.channel_id);
