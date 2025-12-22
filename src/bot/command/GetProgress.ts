@@ -1,6 +1,16 @@
 import { type ChannelMessage, type IInteractiveMessageProps } from "mezon-sdk";
 import client from "../client.ts";
 import Task from "../../db/models/task.model.ts";
+
+function getTreeStatus(minutes: number) {
+  if (minutes < 30) return { emoji: "🌰", label: "Seedling (Hạt giống)" };
+  if (minutes < 120) return { emoji: "🌱", label: "Sprout (Mầm non)" };
+  if (minutes < 300) return { emoji: "🌿", label: "Sapling (Cây con)" };
+  if (minutes < 600)
+    return { emoji: "🌳", label: "Mature Tree (Cây trưởng thành)" };
+  return { emoji: "🌲✨", label: "Ancient Tree (Cây cổ thụ)" };
+}
+
 export default async function GetProgess(event: ChannelMessage) {
   const channel = await client.channels.fetch(event.channel_id);
   const message = await channel.messages.fetch(event.message_id!);
@@ -14,7 +24,7 @@ export default async function GetProgess(event: ChannelMessage) {
     (acc, curr) => acc + Number(curr.duration),
     0
   );
-
+  const tree = getTreeStatus(totalFocusTime);
   const embedMessage: IInteractiveMessageProps = {
     color: "#19bf13ff",
     title: "***YOUR PROGRESS***",
@@ -31,6 +41,11 @@ export default async function GetProgess(event: ChannelMessage) {
         name: "⏲️Total focus time",
         value: totalFocusTime + "minutes",
         inline: true,
+      },
+      {
+        name: `Your Garden: ${tree.emoji}`,
+        value: `Current Stage: **${tree.label}**\nKeep focusing and nurturing your productivity!`,
+        inline: false,
       },
     ],
     footer: {
