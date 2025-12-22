@@ -15,10 +15,11 @@ interface Data {
 }
 
 export default async function handleStartPomo(
-  channel: TextChannel,
   event: MessageButtonClicked,
   message: Message
 ) {
+  const channel = await client.channels.fetch(event.channel_id);
+
   try {
     if (event.extra_data.includes("[")) {
       throw new Error("invalid input");
@@ -62,12 +63,12 @@ export default async function handleStartPomo(
         icon_url: "https://cdn-icons-png.flaticon.com/512/14359/14359077.png",
       },
     };
-    const buttonId = randomUUID();
-    const cancelId = randomUUID();
+    const continueId = randomUUID();
+    const stopId = randomUUID();
     const removeId = randomUUID();
     // create ui component
-    const button: ButtonComponent = createButton(buttonId, "Continue", 3);
-    const cancel: ButtonComponent = createButton(cancelId, "Stop", 4);
+    const button: ButtonComponent = createButton(continueId, "Continue", 3);
+    const cancel: ButtonComponent = createButton(stopId, "Stop", 4);
     const remove: ButtonComponent = createButton(removeId, "Remove", 5);
 
     const actionRow = createActionRow([cancel, button, remove]);
@@ -79,6 +80,7 @@ export default async function handleStartPomo(
     });
 
     const replyMessage = await channel.messages.fetch(replyResponse.message_id);
+    const pomoMessageId = replyResponse.message_id;
 
     const user = await User.findOne({ id: message.sender_id });
     if (!user) {
@@ -171,12 +173,16 @@ export default async function handleStartPomo(
         ],
       });
     }, 1000);
+
     client.onMessageButtonClicked(async (btnEvent) => {
+      if (btnEvent.message_id !== pomoMessageId) {
+        return;
+      }
       if (interval) {
         clearInterval(interval);
         interval = null;
       }
-      if (btnEvent.button_id === cancelId) {
+      if (btnEvent.button_id === stopId) {
         if (timeLeft <= 0) return;
         await replyMessage.update({
           t: "",
@@ -216,7 +222,7 @@ export default async function handleStartPomo(
             },
           ],
         });
-      } else if (btnEvent.button_id === buttonId) {
+      } else if (btnEvent.button_id === continueId) {
         if (timeLeft <= 0) return;
         {
           await replyMessage.update({

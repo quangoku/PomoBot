@@ -12,16 +12,16 @@ import { createSelect } from "../components/Select.ts";
 import { createInput } from "../components/Input.ts";
 import { createActionRow } from "../components/ActionRow.ts";
 import { sendEphemeral } from "../message/Message.ts";
+import client from "../client.ts";
 import handleStartPomo from "../event/HandleStartPomo.ts";
 import { randomUUID } from "node:crypto";
-import client from "../client.ts";
 export default async function createPomo(event: ChannelMessage) {
   // get channel and message
   const channel = await client.channels.fetch(event.channel_id);
   const message = await channel.messages.fetch(event.message_id!);
   //gen buttonId random to not conflict with other button
-  const buttonId = randomUUID();
-  const cancelId = randomUUID();
+  const buttonId = "start-" + randomUUID();
+  const cancelId = "cancel-" + randomUUID();
   // create ui component
   const button: ButtonComponent = createButton(buttonId, "start", 3);
   const cancel: ButtonComponent = createButton(cancelId, "cancel", 4);
@@ -68,9 +68,7 @@ export default async function createPomo(event: ChannelMessage) {
   await sendEphemeral(channel, message.sender_id, content);
   client.onMessageButtonClicked(async (event) => {
     if (event.button_id === buttonId) {
-      handleStartPomo(channel, event, message);
-    } else if (event.button_id === cancelId) {
-      await channel.deleteEphemeral(event.user_id, event.message_id);
+      handleStartPomo(event, message);
     }
   });
 }

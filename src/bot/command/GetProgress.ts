@@ -1,7 +1,7 @@
 import { type ChannelMessage, type IInteractiveMessageProps } from "mezon-sdk";
 import client from "../client.ts";
 import Task from "../../db/models/task.model.ts";
-export default async function Getinfo(event: ChannelMessage) {
+export default async function GetProgess(event: ChannelMessage) {
   const channel = await client.channels.fetch(event.channel_id);
   const message = await channel.messages.fetch(event.message_id!);
 
