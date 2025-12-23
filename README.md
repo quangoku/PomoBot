@@ -1,22 +1,78 @@
-## Create your Mezon application
+# ⏱️ Pomodoro Bot
 
-Visit the [Developers Portal](https://dev-developers.nccsoft.vn/) to create your application.
+## 1. Introduction
 
-## Add bot to your clan
+**Pomodoro Bot Mezon** is an intelligent time-management chatbot specifically designed for the Mezon platform. It helps users apply the Pomodoro technique (focused work sessions) to maximize productivity through several key features:
 
-Use your install link in a browser to add your bot to your desired clan.
+- ⏳ **Automated Cycles**: Automatically manages Focus sessions and Break intervals.
+- 📊 **Real-time Countdown**: Displays a live countdown timer directly in the chat channel.
+- 🥇 **Leaderboard**: Tracks and ranks users based on their total focused hours and completed Pomodoro cycles.
+- 💬 **Random Quotes**: Delivers motivational quotes and inspiration at the start of each session or upon request to keep you driven.
 
-## Installation
+---
+
+## 2. Installation & Build
+
+### 2.1. Environment Setup
 
 ```bash
-$ yarn
+# Clone the repository and install dependencies
+git clone <repo-url-bot-pomo>
+cd PomoBot
+yarn install
 ```
 
-Copy `.env.example` to `.env` and replace it with your application token.
+### 2.2. Configuration env
 
-## Running the app
+```
+BOT_ID=
+BOT_TOKEN=
+MONGO_URI=
+PORT=
+```
+
+### 2.3. Run Bot
 
 ```bash
-# development
-$ yarn start
+yarn start
 ```
+
+### 2.5. Using bot
+
+#### Các lệnh chính (cập nhật mới nhất)
+
+- 🔎 **Start a pomo**
+
+  ```
+  *pomo
+  ```
+
+- 📑 **Check your progress**
+
+  ```
+  *progress
+  ```
+
+  Check your current Pomodoro progress.
+
+- ℹ️ **View leaderboard**
+
+  ```
+  *leaderboard
+  ```
+
+  View the Pomodoro leaderboard
+
+- 🔍 **Random inpiration quote**
+
+  ```
+  *quote
+  ```
+
+  Get an inspirational quote to keep you motivated.
+
+- 🤖 **Gợi ý nhạc AI Gemini**
+  ```
+  *help
+  ```
+  Display help menu.
