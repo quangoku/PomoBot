@@ -14,21 +14,29 @@ async function main() {
   await client.login();
   await connectDB();
   client.onChannelMessage(async (event) => {
-    if (event.content.t?.startsWith("*pomo")) {
-      createPomo(event);
-    } else if (event.content.t?.startsWith("*progress")) {
-      getProgress(event);
-    } else if (event.content.t?.startsWith("*leaderboard")) {
-      getLeaderBoard(event);
-    } else if (event.content.t?.startsWith("*quote")) {
-      getQuote(event);
-    } else if (event.content.t?.startsWith("*help")) {
-      getHelp(event);
+    try {
+      if (event.content.t?.startsWith("*pomo")) {
+        createPomo(event);
+      } else if (event.content.t?.startsWith("*progress")) {
+        getProgress(event);
+      } else if (event.content.t?.startsWith("*leaderboard")) {
+        getLeaderBoard(event);
+      } else if (event.content.t?.startsWith("*quote")) {
+        getQuote(event);
+      } else if (event.content.t?.startsWith("*help")) {
+        getHelp(event);
+      }
+    } catch (error) {
+      console.log("Error handling message:", error);
     }
   });
   client.onMessageButtonClicked(async (event) => {
-    if (event.button_id.startsWith("cancel")) {
-      handleCancelPomo(event);
+    try {
+      if (event.button_id.startsWith("cancel")) {
+        handleCancelPomo(event);
+      }
+    } catch (error) {
+      console.log("Error handling button click:", error);
     }
   });
 }
