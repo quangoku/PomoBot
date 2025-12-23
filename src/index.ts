@@ -1,5 +1,6 @@
 import client from "./bot/client.js";
 import createPomo from "./bot/command/CreatePomo.js";
+import { getHelp } from "./bot/command/GetHelp.js";
 import { getLeaderBoard } from "./bot/command/GetLeaderBoard.js";
 import getProgress from "./bot/command/GetProgress.js";
 import { getQuote } from "./bot/command/GetQuote.js";
@@ -13,14 +14,16 @@ async function main() {
   await client.login();
   await connectDB();
   client.onChannelMessage(async (event) => {
-    if (event.content.t?.startsWith("a")) {
+    if (event.content.t?.startsWith("*pomo")) {
       createPomo(event);
-    } else if (event.content.t?.startsWith("b")) {
+    } else if (event.content.t?.startsWith("*progress")) {
       getProgress(event);
-    } else if (event.content.t?.startsWith("c")) {
+    } else if (event.content.t?.startsWith("*leaderboard")) {
       getLeaderBoard(event);
-    } else if (event.content.t?.startsWith("d")) {
+    } else if (event.content.t?.startsWith("*quote")) {
       getQuote(event);
+    } else if (event.content.t?.startsWith("*help")) {
+      getHelp(event);
     }
   });
   client.onMessageButtonClicked(async (event) => {

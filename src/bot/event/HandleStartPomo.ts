@@ -172,7 +172,7 @@ export default async function handleStartPomo(
           },
         ],
       });
-    }, 1000);
+    }, 60000);
 
     client.onMessageButtonClicked(async (btnEvent) => {
       if (btnEvent.message_id !== pomoMessageId) {
@@ -338,7 +338,7 @@ export default async function handleStartPomo(
                 },
               ],
             });
-          }, 1000);
+          }, 60000);
         }
       } else if (btnEvent.button_id === removeId) {
         const pomo = await channel.messages.get(btnEvent.message_id);

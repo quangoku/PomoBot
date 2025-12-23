@@ -26,8 +26,8 @@ export default async function createPomo(event: ChannelMessage) {
   const button: ButtonComponent = createButton(buttonId, "start", 3);
   const cancel: ButtonComponent = createButton(cancelId, "cancel", 4);
   const timeSelect: SelectComponent = createSelect("time_select", "", [
-    { label: "15mins", value: "15" },
-    { label: "30mins", value: "30" },
+    { label: "25mins", value: "25" },
+    { label: "45mins", value: "45" },
     { label: "60mins", value: "60" },
   ]);
   const taskInput: InputComponent = createInput("task", "Task to complete");
