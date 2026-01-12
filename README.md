@@ -34,12 +34,18 @@ PORT=
 ### 2.3. Run Bot
 
 ```bash
-yarn start
+yarn start (yarn required)
+```
+
+### 2.4.Run with docker
+
+```bash
+docker compose up --build
 ```
 
 ### 2.5. Using bot
 
-#### Các lệnh chính (cập nhật mới nhất)
+#### Main command
 
 - 🔎 **Start a pomo**
 
@@ -71,7 +77,7 @@ yarn start
 
   Get an inspirational quote to keep you motivated.
 
-- 🤖 **Gợi ý nhạc AI Gemini**
+- 🤖 **Help**
   ```
   *help
   ```
