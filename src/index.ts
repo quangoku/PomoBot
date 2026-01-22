@@ -19,6 +19,9 @@ app.get("/", (req, res) => {
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
+  main()
+    .then(() => console.log("Bot is running"))
+    .catch(console.error);
 });
 
 async function main() {
@@ -51,6 +54,3 @@ async function main() {
     }
   });
 }
-main()
-  .then(() => console.log("Bot is running"))
-  .catch(console.error);
