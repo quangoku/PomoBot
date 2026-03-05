@@ -1,4 +1,4 @@
-# ⏱️ Pomodoro Bot
+# ⏱️ Pomodoro Bot (no longer work with latest mezon-sdk)
 
 ## 1. Introduction
 
